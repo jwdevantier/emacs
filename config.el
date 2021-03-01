@@ -60,3 +60,16 @@
             (eq major-mode 'clojurescript-mode))
     (shell-command-to-string (format "clojure -A:cljfmt %s" buffer-file-name))
     (revert-buffer :ignore-auto :noconfirm)))
+
+; increase font size, found example via 'describe variable'
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 20))
+
+(defun on-cider-mode ()
+        (setq cider-default-cljs-repl 'shadow)
+        (setq cider-repl-pop-to-buffer-on-connect nil)
+        (setq cider-repl-display-in-current-window t)
+        (map! :leader
+              :desc "format buffer"
+              "b f" #'cider-format-buffer))
+
+(add-hook 'cider-mode-hook 'on-cider-mode)
