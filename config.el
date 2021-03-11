@@ -73,3 +73,69 @@
               "b f" #'cider-format-buffer))
 
 (add-hook 'cider-mode-hook 'on-cider-mode)
+
+(defun parent-dir (path)
+  ; returns parent directory of the given path
+  ; NOTE: given "/" it returns "/"
+  (file-name-directory (directory-file-name path)))
+
+(defun path-join (a b &rest rest)
+  ; joins paths together
+  (cl-labels ((recur (a lst)
+                     (if (eq nil lst)
+                         a
+                       (recur
+                        (concat (file-name-as-directory a) (car lst))
+                        (cdr lst)))))
+    (recur a (cons b rest))))
+
+(defun file-search-bottom-up (root-dir start-dir fname)
+  (let ((root-dir (directory-file-name root-dir))
+        (start-dir (directory-file-name start-dir)))
+    (cl-labels ((recur (curr-dir)
+                       (message "file-search-bottom-up::recur")
+                       (message (format "lookup dir: %s (root: %s)" curr-dir root-dir))
+                       (let ((path (path-join curr-dir fname)))
+                         (message (format "exists? %s" path))
+                         (if (file-exists-p path)
+                             path
+                           (when (not (string= root-dir curr-dir))
+                             (recur (directory-file-name (parent-dir curr-dir))))))))
+      (recur start-dir))))
+
+
+(defun fmt-astyle ()
+  (interactive)
+  ; TODO: could enable support for all the modes astyle itself supports
+  (if (not (eq major-mode 'c-mode))
+      (error "not in c-mode -- command is only intended to fmt c-files")
+    (let ((bname (buffer-file-name)))
+      (if (not bname)
+          (error "buffer has no associated file - maybe try saving first?")
+        (let ((astylerc-path (file-search-bottom-up (projectile-project-root)
+                                                    (parent-dir bname)
+                                                    "astylerc")))
+          (if (not astylerc-path)
+              (error "could not find any asyncrc file in path from file to project root")
+            (progn
+              (save-buffer)
+              (shell-command-to-string (format "astyle --options=\"%s\" %s"
+                                               astylerc-path
+                                               bname))
+              (revert-buffer :ignore-auto :noconfirm))))))))
+
+
+(defun -c-mode-fmt-old ()
+  ; TODO: should pick other formatters if project is configured differently
+  ; format C-code with `astyle'
+  (interactive)
+  (when (or (eq major-mode 'c-mode))
+    (shell-command-to-string (format "astyle %s" buffer-file-name))
+    (revert-buffer :ignore-auto :noconfirm)))
+
+(defun on-c-mode ()
+  (map! :leader
+        :desc "format buffer"
+        "b f" #'fmt-astyle))
+
+(add-hook 'c-mode-hook 'on-c-mode)
