@@ -63,7 +63,12 @@
     (revert-buffer :ignore-auto :noconfirm)))
 
 ; increase font size, found example via 'describe variable'
-(setq doom-font (font-spec :family "Ubuntu Mono" :size 20))
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 18)
+      doom-big-font (font-spec :family "Ubuntu Mono" :size 18)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 18)
+      doom-serif-font (font-spec :family "Ubuntu Mono" :size 18)
+      doom-font-increment 2
+      doom-big-font-increment 2)
 
 (defun on-cider-mode ()
         (setq cider-default-cljs-repl 'shadow)
