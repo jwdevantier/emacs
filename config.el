@@ -143,3 +143,6 @@
         "b f" #'fmt-astyle))
 
 (add-hook 'c-mode-hook 'on-c-mode)
+
+;; add company support for meson files
+(add-hook 'meson-mode-hook 'company-mode)
