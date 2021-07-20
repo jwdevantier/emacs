@@ -54,3 +54,7 @@
 
 ;; support for meson build files
 (package! meson-mode)
+
+;; mu4e - emacs-based mail client
+;; -- try to only use the Ubuntu-provided elisp
+;(package! mu4e)

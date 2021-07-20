@@ -25,8 +25,10 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-;(setq doom-theme 'doom-one)
-(setq doom-theme 'doom-solarized-light)
+;;(setq doom-theme 'doom-one)
+;;(setq doom-theme 'doom-solarized-light)
+;;(setq doom-theme 'doom-vibrant)
+(setq doom-theme 'doom-nord-light)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -69,6 +71,9 @@
       doom-serif-font (font-spec :family "Ubuntu Mono" :size 18)
       doom-font-increment 2
       doom-big-font-increment 2)
+
+(setq projectile-project-search-path
+      '("~/repos" "~/repos/lisp" "~/.julia/dev"))
 
 (defun on-cider-mode ()
         (setq cider-default-cljs-repl 'shadow)
@@ -133,15 +138,6 @@
                                                bname))
               (revert-buffer :ignore-auto :noconfirm))))))))
 
-
-(defun -c-mode-fmt-old ()
-  ; TODO: should pick other formatters if project is configured differently
-  ; format C-code with `astyle'
-  (interactive)
-  (when (or (eq major-mode 'c-mode))
-    (shell-command-to-string (format "astyle %s" buffer-file-name))
-    (revert-buffer :ignore-auto :noconfirm)))
-
 (defun on-c-mode ()
   (map! :leader
         :desc "format buffer"
@@ -151,3 +147,36 @@
 
 ;; add company support for meson files
 (add-hook 'meson-mode-hook 'company-mode)
+
+;; (setq common-lisp-hyperspec-root
+;;       (expand-file-name "~/repos/lisp/HyperSpec"))
+
+;; (setq common-lisp-hyperspec-root
+;;       (concat "file:/"
+;;               (expand-file-name "~/repos/lisp/HyperSpec/")))
+
+(setq common-lisp-hyperspec-root
+      (expand-file-name "~/repos/lisp/HyperSpec/"))
+
+(after! julia-mode
+  (add-hook! 'julia-mode-hook
+    (setq-local lsp-enable-folding t
+                lsp-folding-range-limit 100)
+    (map! :localleader
+          :map julia-mode-map
+          (:prefix-map ("r" . "repl")
+           :desc "show/start Julia REPL"
+           "r" #'julia-repl
+           :desc "activate project environment"
+           "a" #'julia-repl-activate-parent
+           :desc "help for symbol at point"
+           "h" #'julia-repl-doc)
+          (:prefix-map ("e" . "evaluate")
+           :desc "evaluate whole buffer"
+           "b" #'julia-repl-send-buffer
+           :desc "evaluate region"
+           "r" #'julia-repl-send-region-or-line))))
+
+(after! lsp-mode
+  (add-hook! 'lsp-mode-hook
+             (setq-local +lsp-company-backends '(company-capf))))
