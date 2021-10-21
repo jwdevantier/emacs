@@ -58,3 +58,7 @@
 ;; mu4e - emacs-based mail client
 ;; -- try to only use the Ubuntu-provided elisp
 ;(package! mu4e)
+
+;; 2021-10-09, needed to avoid error with cider plugin
+;; (cl-no-applicable-method map-into ...)
+(package! map :pin "bb50dba")
