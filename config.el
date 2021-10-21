@@ -28,7 +28,8 @@
 ;;(setq doom-theme 'doom-one)
 ;;(setq doom-theme 'doom-solarized-light)
 ;;(setq doom-theme 'doom-vibrant)
-(setq doom-theme 'doom-nord-light)
+;;(setq doom-theme 'doom-nord-light)
+(setq doom-theme 'doom-gruvbox)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
